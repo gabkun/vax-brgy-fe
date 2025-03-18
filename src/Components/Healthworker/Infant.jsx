@@ -3,6 +3,7 @@ import { Card, Button, Modal, Input, message, Avatar, Layout, DatePicker  } from
 import moment from 'moment';
 import axiosInstance from '../../../api/axiosConfig';
 import Sidebar from './Sidebar';
+import background from '../../img/bg-image-work.jpg'
 
 const { Sider, Content, Header } = Layout;
 
@@ -120,7 +121,10 @@ useEffect(() => {
                                                         </Avatar>
                                                     </div>
                                                 </Header>
-                <Content className="p-6 bg-gray-100">
+                <Content
+                           className="p-6 bg-cover bg-center"
+                           style={{ backgroundImage: `url(${background})` }}
+                           >
                     <Button type="primary" onClick={() => setIsModalOpen(true)}>Add Infant</Button>
                     <div className="mt-6 grid grid-cols-2 gap-4">
                         {infants.map((infant) => (

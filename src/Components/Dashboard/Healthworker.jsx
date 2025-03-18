@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Table, Button, Card } from 'antd';
 import axiosInstance from '../../../api/axiosConfig';
 import Sidebar from '../Sidebar/Sidebar';
+import background from '../../img/bg-image-admin.jpg'
 
 const HealthWorkerManagement = () => {
     const [approvedWorkers, setApprovedWorkers] = useState([]);
@@ -67,7 +68,7 @@ const HealthWorkerManagement = () => {
             render: (_, worker) => (
                 <>
                     <Button type="primary" onClick={() => approveWorker(worker.id)} className="mr-2 bg-green-500 text-white">Approve</Button>
-                    <Button danger onClick={() => declineWorker(worker.id)} className="bg-red-500 text-white">Decline</Button>
+                    <Button danger onClick={() => declineWorker(worker.id)} className="bg-red-500 text-red-500">Decline</Button>
                 </>
             ),
         },

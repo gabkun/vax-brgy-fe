@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Spin, Layout, message, Button, Modal, Form, Input, Select, Tag } from 'antd';
-import Sidebar from '../Sidebar/Sidebar';
+import Sidebar from './Sidebar';
 import axiosInstance from '../../../api/axiosConfig';
+import background from '../../img/bg-image-work.jpg'
 
 const { Sider, Content, Header } = Layout;
 const { Option } = Select;
@@ -98,7 +99,10 @@ const HealthVaccination = () => {
                     <h2 className="text-4xl font-semibold">Vaccination History</h2>
                     <Button type="primary" onClick={() => setIsModalOpen(true)}>Add Vaccination</Button>
                 </Header>
-                <Content className="p-6 bg-gray-100">
+           <Content
+                      className="p-6 bg-cover bg-center"
+                      style={{ backgroundImage: `url(${background})` }}
+                      >
                     {loading ? (
                         <div className="flex justify-center items-center h-64">
                             <Spin size="large" />

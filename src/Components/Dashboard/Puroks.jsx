@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Layout, Input, Button, Card, Avatar } from 'antd';
 import axiosInstance from '../../../api/axiosConfig';
 import Sidebar from '../Sidebar/Sidebar';
+import background from '../../img/bg-image-admin.jpg'
 
 const { Sider, Content, Header } = Layout;
 
@@ -55,7 +56,10 @@ const PurokManagement = () => {
                     <h2 className="text-4xl font-semibold">Purok Management</h2>
                     <Avatar size="large" className="bg-gray-300" />
                 </Header>
-                <Content className="p-6 bg-gray-100">
+              <Content
+                className="p-6 bg-cover bg-center"
+                style={{ backgroundImage: `url(${background})` }}
+              >
                     <div className="mb-4">
                         <Input
                             placeholder="Enter Purok Name"

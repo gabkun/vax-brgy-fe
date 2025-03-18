@@ -3,6 +3,7 @@ import { Card, Avatar, Spin, Layout, message, Button } from "antd";
 import Sidebar from "../Sidebar/Sidebar";
 import axiosInstance from "../../../api/axiosConfig";
 import AddVaccineModal from "./AddVaccineModal.jsx";
+import background from '../../img/bg-image-admin.jpg'
 
 const { Sider, Content, Header } = Layout;
 
@@ -43,7 +44,10 @@ const VaccinationList = () => {
                     </Button>
                     <Avatar size="large" className="bg-gray-300" />
                 </Header>
-                <Content className="p-6 bg-gray-100">
+               <Content
+                 className="p-6 bg-cover bg-center"
+                 style={{ backgroundImage: `url(${background})` }}
+               >
                     {loading ? (
                         <div className="flex justify-center items-center h-64">
                             <Spin size="large" />
