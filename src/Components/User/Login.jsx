@@ -3,6 +3,7 @@ import axiosInstance from "../../../api/axiosConfig";
 import Navigation from "../Nav/Navigation";
 import { useNavigate, Link } from "react-router-dom";
 import { User, Lock } from "lucide-react";
+import background from '../../img/bg-image.jpg'
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -42,7 +43,10 @@ const LoginForm = () => {
     <>
       <Navigation />
       <h1 className="text-5xl m-10 font-extrabold text-gray-800 text-center">Vaccination Record Management System for Infant of Barangay Canlandog</h1>
-      <div className="overflow-hidden h-screen flex items-start justify-center bg-gradient-to-br from-blue-50 to-blue-100 p-4 pt-16">
+      <div
+        className="overflow-hidden h-screen flex items-start justify-center bg-cover bg-center p-4 pt-16"
+        style={{ backgroundImage: `url(${background})` }}
+      >
         <div className="w-full max-w-md bg-white shadow-xl rounded-2xl p-8">
           <h2 className="text-xl font-semibold text-gray-700 text-center mb-4">Login</h2>
           {error && <p className="text-red-500 text-center text-sm mb-4">{error}</p>}

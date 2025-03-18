@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, Button, Layout, Avatar } from 'antd';
 import axiosInstance from '../../../api/axiosConfig';
 import Sidebar from './Sidebar';
+import background from '../../img/bg-image-work.jpg'
 
 const { Sider, Content, Header } = Layout;
 
@@ -44,7 +45,10 @@ const HworkerDashboard = () => {
                         </Avatar>
                     </div>
                 </Header>
-                <Content className="p-6 bg-gray-100">
+            <Content
+            className="p-6 bg-cover bg-center"
+            style={{ backgroundImage: `url(${background})` }}
+            >
                     <div className="grid grid-cols-3 gap-4">
                         <Card className="shadow-lg">
                             <h3 className="text-lg font-bold">Vaccine Listed</h3>

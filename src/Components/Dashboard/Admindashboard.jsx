@@ -4,6 +4,7 @@ import { Card, Button, Menu, Layout, Avatar } from 'antd';
 import Sidebar from '../Sidebar/Sidebar';
 import axiosInstance from '../../../api/axiosConfig';
 import { useNavigate } from 'react-router-dom';
+import background from '../../img/bg-image-admin.jpg'
 
 const { Sider, Content, Header } = Layout;
 
@@ -38,7 +39,10 @@ const Dashboard = () => {
                     <h2 className="text-4xl font-semibold">Admin Dashboard</h2>
                     <Avatar size="large" className="bg-gray-300" />
                 </Header>
-                <Content className="p-6 bg-gray-100">
+                <Content
+  className="p-6 bg-cover bg-center"
+  style={{ backgroundImage: `url(${background})` }}
+>
                     <div className="grid grid-cols-3 gap-4">
                         <Card className="shadow-lg">
                             <h3 className="text-lg font-bold">Vaccine Listed</h3>
