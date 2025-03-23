@@ -49,41 +49,43 @@ const PurokManagement = () => {
     }, []);
 
     return (
-        <Layout className="min-h-screen">
-            <Sidebar />
-            <Layout>
-                <Header className="bg-white p-4 shadow-md flex justify-between items-center">
-                    <h2 className="text-4xl font-semibold">Purok Management</h2>
-                    <Avatar size="large" className="bg-gray-300" />
-                </Header>
-              <Content
-                className="p-6 bg-cover bg-center"
-                style={{ backgroundImage: `url(${background})` }}
-              >
-                    <div className="mb-4">
-                        <Input
-                            placeholder="Enter Purok Name"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            style={{ width: '300px', marginRight: '10px' }}
-                        />
-                        <Button type="primary" onClick={handleCreatePurok}>Create Purok</Button>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <Card title="Active Puroks" bordered={true}>
-                            {puroks.map((purok) => (
-                                <p key={purok.id}>{purok.name}</p>
-                            ))}
-                        </Card>
-                        <Card title="Inactive Puroks" bordered={true}>
-                            {inactivePuroks.map((purok) => (
-                                <p key={purok.id}>{purok.name}</p>
-                            ))}
-                        </Card>
-                    </div>
-                </Content>
-            </Layout>
-        </Layout>
+<Layout className="min-h-screen">
+    <Sidebar />
+    <Layout>
+        <Header className="bg-white p-4 shadow-md flex justify-between items-center">
+            <h2 className="text-4xl font-semibold">Purok Management</h2>
+            <Avatar size="large" className="bg-gray-300" />
+        </Header>
+        <Content
+            className="p-6 bg-cover bg-center"
+            style={{ backgroundImage: `url(${background})` }}
+        >
+            <div className="mb-4">
+                <Input
+                    placeholder="Enter Purok Name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    style={{ width: '300px', marginRight: '10px' }}
+                />
+                <Button type="primary" onClick={handleCreatePurok}>Create Purok</Button>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+                <Card title="Puroks List" bordered={true}>
+                    {puroks.map((purok) => (
+                        <div key={purok.id} className="flex justify-between items-center mb-2">
+                            <p>{purok.name}</p>
+                            <div>
+                                <Button type="primary" style={{ marginRight: '5px' }}>Update</Button>
+                                <Button danger >Delete</Button>
+                            </div>
+                        </div>
+                    ))}
+                </Card>
+            </div>
+        </Content>
+    </Layout>
+</Layout>
+
     );
 };
 

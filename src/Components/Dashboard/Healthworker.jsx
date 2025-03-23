@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Card } from 'antd';
+import { Table, Button, Card, Modal } from 'antd';
 import axiosInstance from '../../../api/axiosConfig';
 import Sidebar from '../Sidebar/Sidebar';
-import background from '../../img/bg-image-admin.jpg'
+import background from '../../img/bg-image-admin.jpg';
 
 const HealthWorkerManagement = () => {
     const [approvedWorkers, setApprovedWorkers] = useState([]);
     const [pendingWorkers, setPendingWorkers] = useState([]);
+    const [selectedWorker, setSelectedWorker] = useState(null);
+    const [isModalVisible, setIsModalVisible] = useState(false);
 
     useEffect(() => {
         fetchApprovedWorkers();
@@ -41,6 +43,16 @@ const HealthWorkerManagement = () => {
         }
     };
 
+    const viewWorker = async (id) => {
+        try {
+            const response = await axiosInstance.get(`api/health/${id}`);
+            setSelectedWorker(response.data);
+            setIsModalVisible(true);
+        } catch (error) {
+            console.error('Error fetching health worker details:', error);
+        }
+    };
+
     const declineWorker = async (id) => {
         try {
             await axiosInstance.put(`api/health/decline/${id}`);
@@ -50,12 +62,26 @@ const HealthWorkerManagement = () => {
         }
     };
 
+    const handleCloseModal = () => {
+        setIsModalVisible(false);
+        setSelectedWorker(null);
+    };
+
     const approvedColumns = [
-        { title: 'ID', dataIndex: 'id', key: 'id' },
         { title: 'Email', dataIndex: 'email', key: 'email' },
         { title: 'Name', key: 'name', render: (_, worker) => `${worker.fname} ${worker.mname} ${worker.lname} ${worker.suffix}` },
-        { title: 'Job Title', dataIndex: 'job_title', key: 'job_title' },
+        { title: 'Profession', dataIndex: 'prof_info', key: 'prof_info' },
         { title: 'Department', dataIndex: 'department', key: 'department' },
+        {
+            title: 'Actions',
+            key: 'actions',
+            render: (_, worker) => (
+                <>
+                    <Button type="primary" onClick={() => viewWorker(worker.id)} className="mr-2 bg-blue-500 text-white">View</Button>
+                    <Button className="bg-green-500 text-white">Edit</Button>
+                </>
+            ),
+        },
     ];
 
     const pendingColumns = [
@@ -87,6 +113,33 @@ const HealthWorkerManagement = () => {
                     <h3 className="text-xl font-semibold mb-4">Pending Health Workers</h3>
                     <Table columns={pendingColumns} dataSource={pendingWorkers} rowKey="id" />
                 </Card>
+
+                <Modal
+                    title="Health Worker Details"
+                    visible={isModalVisible}
+                    onCancel={handleCloseModal}
+                    footer={[
+                        <Button danger key="close" onClick={handleCloseModal}>
+                            Close
+                        </Button>,
+                    ]}
+                >
+                    {selectedWorker && (
+                        <div>
+                            <p><strong>Email:</strong> {selectedWorker.email}</p>
+                            <p><strong>Name:</strong> {selectedWorker.fname} {selectedWorker.mname} {selectedWorker.lname} {selectedWorker.suffix}</p>
+                            <p><strong>Address:</strong> {selectedWorker.address}</p>
+                            <p><strong>Mobile:</strong> {selectedWorker.mobile}</p>
+                            <p><strong>Age:</strong> {selectedWorker.age}</p>
+                            <p><strong>Date of Birth:</strong> {selectedWorker.dob}</p>
+                            <p><strong>Profession:</strong> {selectedWorker.prof_info}</p>
+                            <p><strong>License Number:</strong> {selectedWorker.licensenum}</p>
+                            <p><strong>Job Title:</strong> {selectedWorker.job_title}</p>
+                            <p><strong>Department:</strong> {selectedWorker.department}</p>
+                            <p><strong>Experience:</strong> {selectedWorker.experience}</p>
+                        </div>
+                    )}
+                </Modal>
             </div>
         </div>
     );

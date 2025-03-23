@@ -15,6 +15,8 @@ const HealthVaccination = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+    const [viewData, setViewData] = useState(null);
     const [form] = Form.useForm();
 
     // Fetch all required data
@@ -46,8 +48,8 @@ const HealthVaccination = () => {
         const fetchMembers = async () => {
             try {
                 const memberRes = await axiosInstance.get('/api/infant');
-                setMembers(memberRes.data.data);  // Access the 'data' key
-                console.log("Loaded members:", memberRes.data.data);  // Debugging
+                setMembers(memberRes.data.data);  
+                console.log("Loaded members:", memberRes.data.data);  
             } catch (err) {
                 setError("Failed to fetch members");
                 console.error(err);
@@ -55,7 +57,6 @@ const HealthVaccination = () => {
                 setLoading(false);
             }
         };
-    
         fetchMembers();
     }, []);
 
@@ -68,6 +69,17 @@ const HealthVaccination = () => {
             setIsModalOpen(false);
         } catch (err) {
             message.error('Failed to create vaccine');
+        }
+    };
+
+    // Handle viewing a vaccination record
+    const handleViewVaccination = async (id) => {
+        try {
+            const response = await axiosInstance.get(`/api/vaccination/${id}`);
+            setViewData(response.data);
+            setIsViewModalOpen(true);
+        } catch (err) {
+            message.error('Failed to load vaccination details');
         }
     };
 
@@ -84,12 +96,35 @@ const HealthVaccination = () => {
                 return <Tag color="green">Active</Tag>;
             case 2:
                 return <Tag color="blue">Completed</Tag>;
-            case 3:
+            case 0:
                 return <Tag color="gray">Absent</Tag>;
             default:
                 return <Tag color="orange">Unknown</Tag>;
         }
     };
+
+    const handleSetCompleted = async (id) => {
+        try {
+            const response = await axiosInstance.put(`/api/vaccination/completed/${id}`);
+            message.success(response.data.message);
+            setIsViewModalOpen(false);
+            // Refresh the list or update UI here
+        } catch (error) {
+            message.error(error.response?.data?.message || "Failed to mark as completed");
+        }
+    };
+    
+    const handleSetCancelled = async (id) => {
+        try {
+            const response = await axiosInstance.put(`/api/vaccination/cancelled/${id}`);
+            message.success(response.data.message);
+            setIsViewModalOpen(false);
+            // Refresh the list or update UI here
+        } catch (error) {
+            message.error(error.response?.data?.message || "Failed to mark as cancelled");
+        }
+    };
+    
 
     return (
         <Layout className="min-h-screen">
@@ -99,10 +134,10 @@ const HealthVaccination = () => {
                     <h2 className="text-4xl font-semibold">Vaccination History</h2>
                     <Button type="primary" onClick={() => setIsModalOpen(true)}>Add Vaccination</Button>
                 </Header>
-           <Content
-                      className="p-6 bg-cover bg-center"
-                      style={{ backgroundImage: `url(${background})` }}
-                      >
+                <Content
+                    className="p-6 bg-cover bg-center"
+                    style={{ backgroundImage: `url(${background})` }}
+                >
                     {loading ? (
                         <div className="flex justify-center items-center h-64">
                             <Spin size="large" />
@@ -119,13 +154,12 @@ const HealthVaccination = () => {
                                     <h3 className="text-2xl font-bold mb-2">
                                         {vaccine.member_lname}, {vaccine.member_fname} {vaccine.suffix}
                                     </h3>
-                                    <p className="text-lg"><strong>Age:</strong> {vaccine.age} years</p>
-                                    <p className="text-lg"><strong>Date of Birth:</strong> {formatDate(vaccine.dob)}</p>
                                     <p className="text-lg"><strong>Scheduled Date:</strong> {formatDate(vaccine.sched_date)}</p>
+                                    <p className="text-lg"><strong>Vaccine:</strong> {vaccine.vaccine_name}</p>
                                     <p className="text-lg"><strong>Status:</strong> {getStatusLabel(vaccine.status)}</p>
                                     <p className="text-lg"><strong>Time:</strong> {vaccine.sched_time}</p>
                                     <div className="flex justify-end gap-2 mt-4">
-                                        <Button type="primary">View</Button>
+                                        <Button type="primary" onClick={() => handleViewVaccination(vaccine.id)}>View</Button>
                                         <Button type="default">Edit</Button>
                                     </div>
                                 </Card>
@@ -142,61 +176,59 @@ const HealthVaccination = () => {
                 onOk={() => form.submit()}
             >
                 <Form form={form} onFinish={handleAddVaccination} layout="vertical">
-                    <Form.Item
-                        name="sched_date"
-                        label="Schedule Date"
-                        rules={[{ required: true, message: 'Please select the scheduled date!' }]}
-                    >
+                    <Form.Item name="sched_date" label="Schedule Date" rules={[{ required: true }]}>
                         <Input type="date" />
                     </Form.Item>
-                    <Form.Item
-                        name="sched_time"
-                        label="Schedule Time"
-                        rules={[{ required: true, message: 'Please select the scheduled time!' }]}
-                    >
+                    <Form.Item name="sched_time" label="Schedule Time" rules={[{ required: true }]}>
                         <Input type="time" />
                     </Form.Item>
-                    <Form.Item
-                        name="vaccine_id"
-                        label="Vaccine"
-                        rules={[{ required: true, message: 'Please select a vaccine!' }]}
-                    >
+                    <Form.Item name="vaccine_id" label="Vaccine" rules={[{ required: true }]}>
                         <Select placeholder="Select Vaccine">
                             {vaccines.map((vaccine) => (
-                                <Option key={vaccine.id} value={vaccine.id}>
-                                    {vaccine.name}
-                                </Option>
-                            ))}
-                        </Select>
-                    </Form.Item>
-                    <Form.Item
-                        name="worker_id"
-                        label="Health Worker"
-                        rules={[{ required: true, message: 'Please select a health worker!' }]}
-                    >
-                        <Select placeholder="Select Health Worker">
-                            {healthWorkers.map((worker) => (
-                                <Option key={worker.hworker_id} value={worker.hworker_id}>
-                                    {worker.fname} {worker.lname}
-                                </Option>
-                            ))}
-                        </Select>
-                    </Form.Item>
-                    <Form.Item
-                        name="member_id"
-                        label="Infant"
-                        rules={[{ required: true, message: 'Please select a member!' }]}
-                    >
-                        <Select placeholder="Select Member">
-                            {members.map((member) => (
-                                <Option key={member.id} value={member.id}>
-                                    {member.fname}, {member.lname} {member.suffix}
-                                </Option>
+                                <Option key={vaccine.id} value={vaccine.id}>{vaccine.name}</Option>
                             ))}
                         </Select>
                     </Form.Item>
                 </Form>
             </Modal>
+
+            <Modal
+    title="Vaccination Details"
+    open={isViewModalOpen}
+    onCancel={() => setIsViewModalOpen(false)}
+    footer={
+        viewData?.status === 1 ? [
+            <Button 
+                key="completed" 
+                type="primary" 
+                style={{ backgroundColor: "green", borderColor: "green" }}
+                onClick={() => handleSetCompleted(viewData.id)}
+            >
+                Completed
+            </Button>,
+            <Button 
+                key="cancelled" 
+                type="primary" 
+                danger 
+                style={{ backgroundColor: "red", borderColor: "red" }}
+                onClick={() => handleSetCancelled(viewData.id)}
+            >
+                Cancelled
+            </Button>,
+        ] : null
+    }
+>
+    {viewData && (
+        <>
+            <p><strong>Vaccine:</strong> {viewData.vaccine_name}</p>
+            <p><strong>Assigned Worker:</strong> {viewData.worker_fname} {viewData.worker_lname}</p>
+            <p><strong>Infant Name:</strong> {viewData.member_fname} {viewData.member_lname}</p>
+            <p><strong>Created:</strong> {formatDate(viewData.created)}</p>
+        </>
+    )}
+</Modal>
+
+
         </Layout>
     );
 };

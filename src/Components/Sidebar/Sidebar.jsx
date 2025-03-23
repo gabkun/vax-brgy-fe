@@ -11,7 +11,7 @@ const Sidebar = ({ userRole }) => {
         <Sider width={350} className="bg-green-600 text-white">
             <div className="flex items-center justify-center p-6 space-x-3">
                 <img src={Logo} alt="Logo" className="h-12 w-12" />
-                <span className="text-3xl font-semibold">VaxBarangay</span>
+                <label className='text-xl'>Barangay Canlandog Vaccination System</label>
             </div>
             <Menu theme="dark" mode="inline" className="bg-green-700 text-xl mt-4">
                 <Menu.Item key="1" icon={<BarChart />} className="text-white">
