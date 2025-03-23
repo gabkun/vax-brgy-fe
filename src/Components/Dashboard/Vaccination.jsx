@@ -3,6 +3,7 @@ import { Card, Spin, Layout, message, Button, Modal, Form, Input, Select, Tag } 
 import Sidebar from '../Sidebar/Sidebar';
 import axiosInstance from '../../../api/axiosConfig';
 import background from '../../img/bg-image-admin.jpg';
+import EditVaccination from './EditModal';
 
 const { Sider, Content, Header } = Layout;
 const { Option } = Select;
@@ -15,7 +16,10 @@ const Vaccination = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const [isEditOpen, setIsEditOpen] = useState(false);
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+    const [selectedVaccinationId, setSelectedVaccinationId] = useState(null);
     const [viewData, setViewData] = useState(null);
     const [form] = Form.useForm();
 
@@ -72,6 +76,22 @@ const Vaccination = () => {
         }
     };
 
+    const deleteVaccination = async (id) => {
+        try {
+            const response = await axiosInstance.delete(`/api/vaccination/${id}`);
+            console.log(id)
+            if (response.status === 200) {
+                alert('Vaccination record deleted successfully');
+                navigate(0)
+                // You can add logic to update the state or refresh the list here
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Failed to delete vaccination record');
+        }
+    };
+    
+
     // Handle viewing a vaccination record
     const handleViewVaccination = async (id) => {
         try {
@@ -126,6 +146,30 @@ const Vaccination = () => {
     };
     
 
+    const handleEditClick = (id) => {
+        setSelectedVaccinationId(id);
+        setIsEditOpen(true);
+        console.log("Edit button clicked, ID:", id); // For debugging
+    };
+
+    // Table columns
+    const columns = [
+        { title: 'ID', dataIndex: 'id', key: 'id' },
+        { title: 'Scheduled Date', dataIndex: 'sched_date', key: 'sched_date' },
+        { title: 'Scheduled Time', dataIndex: 'sched_time', key: 'sched_time' },
+        { title: 'Vaccine ID', dataIndex: 'vaccine_id', key: 'vaccine_id' },
+        { title: 'Worker ID', dataIndex: 'worker_id', key: 'worker_id' },
+        { title: 'Member ID', dataIndex: 'member_id', key: 'member_id' },
+        { title: 'Status', dataIndex: 'status', key: 'status' },
+        {
+            title: 'Actions',
+            key: 'actions',
+            render: (text, record) => (
+                <Button onClick={() => handleEditClick(record.id)}>Edit</Button>
+            ),
+        },
+    ];
+
     return (
         <Layout className="min-h-screen">
             <Sidebar />
@@ -160,7 +204,7 @@ const Vaccination = () => {
                                     <p className="text-lg"><strong>Time:</strong> {vaccine.sched_time}</p>
                                     <div className="flex justify-end gap-2 mt-4">
                                         <Button type="primary" onClick={() => handleViewVaccination(vaccine.id)}>View</Button>
-                                        <Button type="default">Edit</Button>
+                                        <Button type="primary" onClick={() => handleEditClick(vaccine.id)}>Edit</Button>
                                     </div>
                                 </Card>
                             ))}
@@ -176,16 +220,56 @@ const Vaccination = () => {
                 onOk={() => form.submit()}
             >
                 <Form form={form} onFinish={handleAddVaccination} layout="vertical">
-                    <Form.Item name="sched_date" label="Schedule Date" rules={[{ required: true }]}>
+                    <Form.Item
+                        name="sched_date"
+                        label="Schedule Date"
+                        rules={[{ required: true, message: 'Please select the scheduled date!' }]}
+                    >
                         <Input type="date" />
                     </Form.Item>
-                    <Form.Item name="sched_time" label="Schedule Time" rules={[{ required: true }]}>
+                    <Form.Item
+                        name="sched_time"
+                        label="Schedule Time"
+                        rules={[{ required: true, message: 'Please select the scheduled time!' }]}
+                    >
                         <Input type="time" />
                     </Form.Item>
-                    <Form.Item name="vaccine_id" label="Vaccine" rules={[{ required: true }]}>
+                    <Form.Item
+                        name="vaccine_id"
+                        label="Vaccine"
+                        rules={[{ required: true, message: 'Please select a vaccine!' }]}
+                    >
                         <Select placeholder="Select Vaccine">
                             {vaccines.map((vaccine) => (
-                                <Option key={vaccine.id} value={vaccine.id}>{vaccine.name}</Option>
+                                <Option key={vaccine.id} value={vaccine.id}>
+                                    {vaccine.name}
+                                </Option>
+                            ))}
+                        </Select>
+                    </Form.Item>
+                    <Form.Item
+                        name="worker_id"
+                        label="Health Worker"
+                        rules={[{ required: true, message: 'Please select a health worker!' }]}
+                    >
+                        <Select placeholder="Select Health Worker">
+                            {healthWorkers.map((worker) => (
+                                <Option key={worker.hworker_id} value={worker.hworker_id}>
+                                    {worker.fname} {worker.lname}
+                                </Option>
+                            ))}
+                        </Select>
+                    </Form.Item>
+                    <Form.Item
+                        name="member_id"
+                        label="Infant"
+                        rules={[{ required: true, message: 'Please select a member!' }]}
+                    >
+                        <Select placeholder="Select Member">
+                            {members.map((member) => (
+                                <Option key={member.id} value={member.id}>
+                                    {member.fname}, {member.lname} {member.suffix}
+                                </Option>
                             ))}
                         </Select>
                     </Form.Item>
@@ -224,9 +308,19 @@ const Vaccination = () => {
             <p><strong>Assigned Worker:</strong> {viewData.worker_fname} {viewData.worker_lname}</p>
             <p><strong>Infant Name:</strong> {viewData.member_fname} {viewData.member_lname}</p>
             <p><strong>Created:</strong> {formatDate(viewData.created)}</p>
+            <Button danger type="default" onClick={() => deleteVaccination(viewData.id)}>Delete</Button>
         </>
     )}
 </Modal>
+<EditVaccination
+    isModalOpen={isEditOpen}
+    setIsModalOpen={setIsEditOpen}
+    vaccinationId={selectedVaccinationId}  // Pass the ID correctly
+    vaccines={vaccines}
+    healthWorkers={healthWorkers}
+    members={members}
+    refreshData={() => fetchData()}
+/>
 
 
         </Layout>

@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Card, Button, Modal, Input, message, Avatar, Layout, DatePicker  } from 'antd';
 import moment from 'moment';
 import axiosInstance from '../../../api/axiosConfig';
-import Sidebar from './Sidebar';
-import background from '../../img/bg-image-work.jpg'
+import Sidebar from '../Sidebar/Sidebar';
+import background from '../../img/bg-image-admin.jpg'
 import { useNavigate } from 'react-router-dom';
 
 const { Sider, Content, Header } = Layout;
@@ -90,6 +90,15 @@ useEffect(() => {
     const reload = () => {
         navigate(0);
     }
+    const handleDelete = async (id) => {
+        try {
+            await axiosInstance.delete(`/api/infant/infants/${id}`);
+            message.success('Infant record deleted successfully');
+            navigate(0)
+        } catch (error) {
+            message.error('Failed to delete infant record');
+        }
+    };
 
     const handleView = async (infant) => {
         try {
@@ -114,6 +123,14 @@ useEffect(() => {
                                 Documents: <a href={`/uploads/${data.documents}`} target="_blank" rel="noopener noreferrer">View Document</a>
                             </p>
                         )}
+                        <Button 
+                        type="primary" 
+                        danger 
+                        onClick={() => handleDelete(infant.id)}
+                        style={{ marginTop: '10px' }}
+                    >
+                        Delete
+                    </Button>
                     </div>
                 ),
                 onOk() {},

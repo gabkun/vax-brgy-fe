@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Card, Avatar, Spin, Layout, message, Button } from "antd";
-import Sidebar from "./Sidebar";
+import Sidebar from "../Sidebar/Sidebar";
 import axiosInstance from "../../../api/axiosConfig";
 import AddVaccineModal from "./AddVaccineModal.jsx";
-import background from '../../img/bg-image-work.jpg'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+import background from '../../img/bg-image-admin.jpg'
 
 const { Sider, Content, Header } = Layout;
 

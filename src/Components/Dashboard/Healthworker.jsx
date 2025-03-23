@@ -9,6 +9,33 @@ const HealthWorkerManagement = () => {
     const [pendingWorkers, setPendingWorkers] = useState([]);
     const [selectedWorker, setSelectedWorker] = useState(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+const [editForm, setEditForm] = useState({
+    email: '', status: '', lname: '', fname: '', mname: '', suffix: '',
+    address: '', mobile: '', age: '', dob: '', prof_info: '', licensenum: '',
+    job_title: '', department: '', experience: ''
+});
+
+const openEditModal = (worker) => {
+    setEditForm(worker);
+    setIsEditModalVisible(true);
+};
+
+const handleEditInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditForm((prev) => ({ ...prev, [name]: value }));
+};
+
+const handleEditSubmit = async () => {
+    try {
+        await axiosInstance.put(`api/health/${editForm.id}`, editForm);
+        setIsEditModalVisible(false);
+        fetchApprovedWorkers();
+    } catch (error) {
+        console.error('Error updating health worker:', error);
+    }
+};
+
 
     useEffect(() => {
         fetchApprovedWorkers();
@@ -78,7 +105,7 @@ const HealthWorkerManagement = () => {
             render: (_, worker) => (
                 <>
                     <Button type="primary" onClick={() => viewWorker(worker.id)} className="mr-2 bg-blue-500 text-white">View</Button>
-                    <Button className="bg-green-500 text-white">Edit</Button>
+                    <Button className="bg-green-500 text-white" onClick={() => openEditModal(worker)}>Edit</Button>
                 </>
             ),
         },
@@ -100,6 +127,22 @@ const HealthWorkerManagement = () => {
         },
     ];
 
+    const deleteWorker = async (id) => {
+        try {
+            await axiosInstance.delete(`api/health/${id}`);
+            fetchApprovedWorkers();
+            fetchPendingWorkers();
+        } catch (error) {
+            if (error.response && error.response.status === 500) {
+                console.error('Health worker is currently in use and cannot be deleted.');
+                alert('Cannot delete health worker. The health worker is currently in use.');
+            } else {
+                console.error('Error deleting health worker:', error);
+                alert('An unexpected error occurred while deleting the health worker.');
+            }
+        }
+    };
+    
     return (
         <div className="flex h-screen">
             <Sidebar />
@@ -119,9 +162,12 @@ const HealthWorkerManagement = () => {
                     visible={isModalVisible}
                     onCancel={handleCloseModal}
                     footer={[
-                        <Button danger key="close" onClick={handleCloseModal}>
-                            Close
-                        </Button>,
+                        <Button
+                            danger
+                            onClick={() => deleteWorker(selectedWorker.id)}
+                        >
+                            Delete
+                        </Button>
                     ]}
                 >
                     {selectedWorker && (
@@ -140,6 +186,27 @@ const HealthWorkerManagement = () => {
                         </div>
                     )}
                 </Modal>
+                <Modal
+    title="Edit Health Worker"
+    visible={isEditModalVisible}
+    onCancel={() => setIsEditModalVisible(false)}
+    onOk={handleEditSubmit}
+>
+    {Object.keys(editForm).map((key) => (
+        key !== 'id' && ( // Exclude the 'id' field from the form
+            <div key={key} className="mb-2">
+                <label className="block font-semibold capitalize">{key}:</label>
+                <input
+                    type="text"
+                    name={key}
+                    value={editForm[key]}
+                    onChange={handleEditInputChange}
+                    className="w-full border border-gray-300 rounded p-1"
+                />
+            </div>
+        )
+    ))}
+</Modal>
             </div>
         </div>
     );

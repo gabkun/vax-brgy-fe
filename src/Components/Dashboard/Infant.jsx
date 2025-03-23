@@ -90,6 +90,15 @@ useEffect(() => {
     const reload = () => {
         navigate(0);
     }
+    const handleDelete = async (id) => {
+        try {
+            await axiosInstance.delete(`/api/infant/infants/${id}`);
+            message.success('Infant record deleted successfully');
+            navigate(0)
+        } catch (error) {
+            message.error('Failed to delete infant record');
+        }
+    };
 
     const handleView = async (infant) => {
         try {
@@ -114,6 +123,14 @@ useEffect(() => {
                                 Documents: <a href={`/uploads/${data.documents}`} target="_blank" rel="noopener noreferrer">View Document</a>
                             </p>
                         )}
+                        <Button 
+                        type="primary" 
+                        danger 
+                        onClick={() => handleDelete(infant.id)}
+                        style={{ marginTop: '10px' }}
+                    >
+                        Delete
+                    </Button>
                     </div>
                 ),
                 onOk() {},

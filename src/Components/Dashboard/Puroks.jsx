@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Input, Button, Card, Avatar } from 'antd';
+import { Layout, Input, Button, Card, Avatar, Modal, message } from 'antd';
 import axiosInstance from '../../../api/axiosConfig';
 import Sidebar from '../Sidebar/Sidebar';
 import background from '../../img/bg-image-admin.jpg'
@@ -10,6 +10,9 @@ const PurokManagement = () => {
     const [name, setName] = useState('');
     const [puroks, setPuroks] = useState([]);
     const [inactivePuroks, setInactivePuroks] = useState([]);
+    const [editingPurok, setEditingPurok] = useState(null);
+    const [editName, setEditName] = useState('');
+    const [isModalVisible, setIsModalVisible] = useState(false);
 
     const fetchPuroks = async () => {
         try {
@@ -48,6 +51,44 @@ const PurokManagement = () => {
         fetchInactivePuroks();
     }, []);
 
+
+    const handleUpdatePurok = async () => {
+        if (!editName) {
+            alert('Name is required');
+            return;
+        }
+        try {
+            await axiosInstance.put(`/api/purok/${editingPurok.id}`, { name: editName });
+            message.success('Purok updated successfully');
+            setIsModalVisible(false);
+            fetchPuroks();
+        } catch (error) {
+            console.error('Error updating purok:', error);
+            message.error('Failed to update purok');
+        }
+    };
+
+    const handleDeletePurok = async (id) => {
+        try {
+            await axiosInstance.delete(`/api/purok/${id}`);
+            message.success('Purok deleted successfully');
+            fetchPuroks();
+        } catch (error) {
+            console.error('Error deleting purok:', error);
+            message.error('Failed to delete purok');
+        }
+    };
+
+    const showEditModal = (purok) => {
+        setEditingPurok(purok);
+        setEditName(purok.name);
+        setIsModalVisible(true);
+    };
+
+    const handleCancel = () => {
+        setIsModalVisible(false);
+    };
+
     return (
 <Layout className="min-h-screen">
     <Sidebar />
@@ -75,13 +116,36 @@ const PurokManagement = () => {
                         <div key={purok.id} className="flex justify-between items-center mb-2">
                             <p>{purok.name}</p>
                             <div>
-                                <Button type="primary" style={{ marginRight: '5px' }}>Update</Button>
-                                <Button danger >Delete</Button>
+                                            <Button 
+                                            type="primary" 
+                                            style={{ marginRight: '5px' }} 
+                                            onClick={() => showEditModal(purok)}
+                                        >
+                                            Update
+                                        </Button>
+                                        <Button 
+                                            danger 
+                                            onClick={() => handleDeletePurok(purok.id)}
+                                        >
+                                            Delete
+                                        </Button>
                             </div>
                         </div>
                     ))}
                 </Card>
             </div>
+            <Modal
+                        title="Edit Purok"
+                        visible={isModalVisible}
+                        onOk={handleUpdatePurok}
+                        onCancel={handleCancel}
+                    >
+                        <Input
+                            placeholder="Enter New Purok Name"
+                            value={editName}
+                            onChange={(e) => setEditName(e.target.value)}
+                        />
+                    </Modal>
         </Content>
     </Layout>
 </Layout>
