@@ -11,11 +11,9 @@ const AddVaccineModal = ({ visible, onClose, onAdd }) => {
         try {
             setLoading(true);
             const response = await axiosInstance.post('/api/vaccine/create', {
-                type: values.type,
                 name: values.name,
                 dosage_info: values.dosage_info,
                 expiry: values.expiry.format('YYYY-MM-DD'),
-                contra: values.contra,
                 status: values.status,
                 available: values.available,
             });
@@ -38,14 +36,7 @@ const AddVaccineModal = ({ visible, onClose, onAdd }) => {
             footer={null}
         >
             <Form layout="vertical" onFinish={handleAddVaccine}>
-                <Form.Item label="Vaccine Type" name="type" rules={[{ required: true, message: 'Please select the vaccine type' }]}>
-                    <Select placeholder="Select vaccine type">
-                        <Option value="Inactivated">Inactivated Vaccines</Option>
-                        <Option value="Live Attenuated">Live Attenuated Vaccines</Option>
-                        <Option value="Subunit, Recombinant, Polysaccharide, Conjugate">Subunit, Recombinant, Polysaccharide, and Conjugate Vaccines</Option>
-                        <Option value="mRNA">mRNA Vaccines</Option>
-                    </Select>
-                </Form.Item>
+    
                 <Form.Item label="Vaccine Name" name="name" rules={[{ required: true, message: 'Please enter the vaccine name' }]}>
                     <Input />
                 </Form.Item>
@@ -54,9 +45,6 @@ const AddVaccineModal = ({ visible, onClose, onAdd }) => {
                 </Form.Item>
                 <Form.Item label="Expiry Date" name="expiry" rules={[{ required: true, message: 'Please select the expiry date' }]}>
                     <DatePicker style={{ width: '100%' }} />
-                </Form.Item>
-                <Form.Item label="Contraindications" name="contra" rules={[{ required: true, message: 'Please enter contraindications' }]}>
-                    <Input />
                 </Form.Item>
                 <Form.Item label="Status" name="status" valuePropName="checked">
                     <Switch checkedChildren="Available" unCheckedChildren="Unavailable" />

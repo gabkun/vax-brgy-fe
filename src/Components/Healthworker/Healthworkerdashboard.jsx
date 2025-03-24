@@ -79,7 +79,7 @@ const [healthworkerTotal, setHealthworkerTotal] = useState(0);
             <Sidebar />
             <Layout>
                 <Header className='bg-white p-6 shadow-md flex justify-between items-center'>
-                    <h2 className='text-4xl font-semibold'>Admin Dashboard</h2>
+                    <h2 className='text-4xl font-semibold'>Healthworker Dashboard</h2>
                     <Avatar size='large' className='bg-gray-300' />
                 </Header>
                 <Content

@@ -9,23 +9,19 @@ const AddVaccineModal = ({
     onAdd,
     onUpdate,
     editingVaccineId,
-    type,
-    setType,
     name,
     setName,
     dosageInfo,
     setDosageInfo,
     expiry,
     setExpiry,
-    contra,
-    setContra,
     status,
     setStatus,
     available,
     setAvailable,
 }) => {
     const handleSubmit = () => {
-        if (!name || !type || !expiry) {
+        if (!name || !expiry) {
             message.error("Please fill in all required fields.");
             return;
         }
@@ -49,24 +45,7 @@ const AddVaccineModal = ({
             cancelText="Cancel"
         >
             <Form layout="vertical">
-                <Form.Item
-                    label="Vaccine Type"
-                    name="type"
-                    rules={[{ required: true, message: 'Please select the vaccine type' }]}
-                >
-                    <Select
-                        placeholder="Select vaccine type"
-                        value={type}
-                        onChange={(value) => setType(value)}
-                    >
-                        <Option value="Inactivated">Inactivated Vaccines</Option>
-                        <Option value="Live Attenuated">Live Attenuated Vaccines</Option>
-                        <Option value="Subunit, Recombinant, Polysaccharide, Conjugate">
-                            Subunit, Recombinant, Polysaccharide, and Conjugate Vaccines
-                        </Option>
-                        <Option value="mRNA">mRNA Vaccines</Option>
-                    </Select>
-                </Form.Item>
+               
 
                 <Form.Item label="Vaccine Name">
                     <Input value={name} onChange={(e) => setName(e.target.value)} />
@@ -80,9 +59,6 @@ const AddVaccineModal = ({
                         value={expiry}
                         onChange={(e) => setExpiry(e.target.value)}
                     />
-                </Form.Item>
-                <Form.Item label="Contraindications">
-                    <Input value={contra} onChange={(e) => setContra(e.target.value)} />
                 </Form.Item>
                 <Form.Item label="Status" name="status" valuePropName="checked">
                     <Switch

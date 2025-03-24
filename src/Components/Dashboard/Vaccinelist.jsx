@@ -15,11 +15,10 @@ const VaccinationList = () => {
     const [modalVisible, setModalVisible] = useState(false);
 
         const [editingVaccineId, setEditingVaccineId] = useState(null);
-    const [type, setType] = useState('');
+
     const [name, setName] = useState('');
     const [dosageInfo, setDosageInfo] = useState('');
     const [expiry, setExpiry] = useState('');
-    const [contra, setContra] = useState('');
     const [status, setStatus] = useState('');
     const [available, setAvailable] = useState('');
 
@@ -49,12 +48,10 @@ const VaccinationList = () => {
         try {
             const response = await axiosInstance.get(`/api/vaccine/${id}`);
             const data = response.data;
-    
-            setType(data.type);
+  
             setName(data.name);
             setDosageInfo(data.dosage_info);
             setExpiry(data.expiry);
-            setContra(data.contra);
             setStatus(data.status);
             setAvailable(data.available);
             setEditingVaccineId(id);
@@ -67,11 +64,10 @@ const VaccinationList = () => {
     const handleCreateOrUpdate = async () => {
         try {
             const vaccineData = {
-                type,
+              
                 name,
                 dosage_info: dosageInfo,
                 expiry,
-                contra,
                 status,
                 available,
             };
@@ -140,9 +136,7 @@ const VaccinationList = () => {
                                     </span>
                                 }
                             >
-                                <p>
-                                    <strong>Type:</strong> {vaccine.type}
-                                </p>
+                                
                                 <p>
                                     <strong>Dosage Info:</strong> {vaccine.dosage_info}
                                 </p>
@@ -152,9 +146,7 @@ const VaccinationList = () => {
                                 <p>
                                     <strong>Available:</strong> {vaccine.available} pcs
                                 </p>
-                                <p>
-                                    <strong>Contraindications:</strong> {vaccine.contra}
-                                </p>
+                                
                                 <div className="flex justify-end gap-2 mt-4">
                                 <Button
     type="primary"
@@ -181,16 +173,12 @@ const VaccinationList = () => {
     onAdd={handleCreateOrUpdate}
     onUpdate={handleCreateOrUpdate}
     editingVaccineId={editingVaccineId}
-    type={type}
-    setType={setType}
     name={name}
     setName={setName}
     dosageInfo={dosageInfo}
     setDosageInfo={setDosageInfo}
     expiry={expiry}
     setExpiry={setExpiry}
-    contra={contra}
-    setContra={setContra}
     status={status}
     setStatus={setStatus}
     available={available}
