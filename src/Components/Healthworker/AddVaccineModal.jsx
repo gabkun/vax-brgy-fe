@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Modal, Button, Form, Input, DatePicker, Switch, InputNumber, message, Select } from 'antd';
 import axiosInstance from '../../../api/axiosConfig';
+import { useNavigate } from 'react-router-dom';
 
 const { Option } = Select;
 
 const AddVaccineModal = ({ visible, onClose, onAdd }) => {
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     const handleAddVaccine = async (values) => {
         try {
@@ -20,6 +22,7 @@ const AddVaccineModal = ({ visible, onClose, onAdd }) => {
             message.success(response.data.message);
             onAdd(); // Refresh the vaccine list
             onClose();
+            navigate(0);
         } catch (error) {
             console.error(error);
             message.error('Failed to add vaccine');

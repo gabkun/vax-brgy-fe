@@ -12,6 +12,7 @@ const Vaccination = () => {
     const [vaccinations, setVaccinations] = useState([]);
     const [healthWorkers, setHealthWorkers] = useState([]);
     const [vaccines, setVaccines] = useState([]);
+    const [contact, setContact] = useState([]);
     const [members, setMembers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -213,68 +214,78 @@ const Vaccination = () => {
                 </Content>
             </Layout>
 
-            <Modal
-                title="Add Vaccination"
-                open={isModalOpen}
-                onCancel={() => setIsModalOpen(false)}
-                onOk={() => form.submit()}
-            >
-                <Form form={form} onFinish={handleAddVaccination} layout="vertical">
-                    <Form.Item
-                        name="sched_date"
-                        label="Schedule Date"
-                        rules={[{ required: true, message: 'Please select the scheduled date!' }]}
-                    >
-                        <Input type="date" />
-                    </Form.Item>
-                    <Form.Item
-                        name="sched_time"
-                        label="Schedule Time"
-                        rules={[{ required: true, message: 'Please select the scheduled time!' }]}
-                    >
-                        <Input type="time" />
-                    </Form.Item>
-                    <Form.Item
-                        name="vaccine_id"
-                        label="Vaccine"
-                        rules={[{ required: true, message: 'Please select a vaccine!' }]}
-                    >
-                        <Select placeholder="Select Vaccine">
-                            {vaccines.map((vaccine) => (
-                                <Option key={vaccine.id} value={vaccine.id}>
-                                    {vaccine.name}
-                                </Option>
-                            ))}
-                        </Select>
-                    </Form.Item>
-                    <Form.Item
-                        name="worker_id"
-                        label="Health Worker"
-                        rules={[{ required: true, message: 'Please select a health worker!' }]}
-                    >
-                        <Select placeholder="Select Health Worker">
-                            {healthWorkers.map((worker) => (
-                                <Option key={worker.hworker_id} value={worker.hworker_id}>
-                                    {worker.fname} {worker.lname}
-                                </Option>
-                            ))}
-                        </Select>
-                    </Form.Item>
-                    <Form.Item
-                        name="member_id"
-                        label="Infant"
-                        rules={[{ required: true, message: 'Please select a member!' }]}
-                    >
-                        <Select placeholder="Select Member">
-                            {members.map((member) => (
-                                <Option key={member.id} value={member.id}>
-                                    {member.fname}, {member.lname} {member.suffix}
-                                </Option>
-                            ))}
-                        </Select>
-                    </Form.Item>
-                </Form>
-            </Modal>
+<Modal
+    title="Add Vaccination"
+    open={isModalOpen}
+    onCancel={() => setIsModalOpen(false)}
+    onOk={() => form.submit()}
+>
+    <Form form={form} onFinish={handleAddVaccination} layout="vertical">
+        <Form.Item
+            name="sched_date"
+            label="Schedule Date"
+            rules={[{ required: true, message: 'Please select the scheduled date!' }]}
+        >
+            <Input type="date" />
+        </Form.Item>
+        <Form.Item
+            name="sched_time"
+            label="Schedule Time"
+            rules={[{ required: true, message: 'Please select the scheduled time!' }]}
+        >
+            <Input type="time" />
+        </Form.Item>
+        <Form.Item
+            name="vaccine_id"
+            label="Vaccine"
+            rules={[{ required: true, message: 'Please select a vaccine!' }]}
+        >
+            <Select placeholder="Select Vaccine">
+                {vaccines.map((vaccine) => (
+                    <Option key={vaccine.id} value={vaccine.id}>
+                        {vaccine.name}
+                    </Option>
+                ))}
+            </Select>
+        </Form.Item>
+        <Form.Item
+            name="worker_id"
+            label="Health Worker"
+            rules={[{ required: true, message: 'Please select a health worker!' }]}
+        >
+            <Select placeholder="Select Health Worker">
+                {healthWorkers.map((worker) => (
+                    <Option key={worker.hworker_id} value={worker.hworker_id}>
+                        {worker.fname} {worker.lname}
+                    </Option>
+                ))}
+            </Select>
+        </Form.Item>
+        <Form.Item
+            name="member_id"
+            label="Infant"
+            rules={[{ required: true, message: 'Please select a member!' }]}
+        >
+            <Select placeholder="Select Member">
+                {members.map((member) => (
+                    <Option key={member.id} value={member.id}>
+                        {member.fname}, {member.lname} {member.suffix}
+                    </Option>
+                ))}
+            </Select>
+        </Form.Item>
+        <Form.Item
+            name="contact_number"
+            label="Contact Number"
+            rules={[
+                { required: true, message: 'Please enter the contact number!' },
+                { pattern: /^[0-9]{10,11}$/, message: 'Please enter a valid contact number!' }
+            ]}
+        >
+            <Input placeholder="Enter contact number" />
+        </Form.Item>
+    </Form>
+</Modal>
 
             <Modal
     title="Vaccination Details"
@@ -317,6 +328,7 @@ const Vaccination = () => {
     setIsModalOpen={setIsEditOpen}
     vaccinationId={selectedVaccinationId}  // Pass the ID correctly
     vaccines={vaccines}
+    contact={contact}
     healthWorkers={healthWorkers}
     members={members}
     refreshData={() => fetchData()}
