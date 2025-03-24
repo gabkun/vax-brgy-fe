@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Spin, Layout, message, Button, Modal, Form, Input, Select, Tag } from 'antd';
-import Sidebar from '../Sidebar/Sidebar';
+import Sidebar from './Sidebar';
 import axiosInstance from '../../../api/axiosConfig';
 import background from '../../img/bg-image-admin.jpg';
 import EditVaccination from './EditModal';

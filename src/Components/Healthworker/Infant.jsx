@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, Button, Modal, Input, message, Avatar, Layout, DatePicker  } from 'antd';
 import moment from 'moment';
 import axiosInstance from '../../../api/axiosConfig';
-import Sidebar from '../Sidebar/Sidebar';
+import Sidebar from './Sidebar';
 import background from '../../img/bg-image-admin.jpg'
 import { useNavigate } from 'react-router-dom';
 
