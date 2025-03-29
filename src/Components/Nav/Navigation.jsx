@@ -14,6 +14,9 @@ const Navigation = () => {
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <div className="flex items-center space-x-3">
         <img src={Logo} alt="Logo" className="h-16 w-16 md:h-20 md:w-20" />
+        <h1 className="text-4xl font-bold">
+          <a href="/" className="hover:underline">Barangay Canlandog Vaccination System</a>
+        </h1>
         </div>
         <div className="md:hidden">
           <button onClick={toggleMenu} className="text-gray-800 focus:outline-none">
