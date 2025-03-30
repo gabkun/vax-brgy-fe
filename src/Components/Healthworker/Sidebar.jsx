@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, Button, Menu, Layout, Avatar } from 'antd';
 import { Link } from 'react-router-dom';
-import Logo from '../../img/icon.jpg';
+import Logo from '../../img/icon1.jpg';
 import { BarChart, Calendar, Baby, Syringe, Stethoscope, LogOut, House } from 'lucide-react';
 
 const { Sider } = Layout;

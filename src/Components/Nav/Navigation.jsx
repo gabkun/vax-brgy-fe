@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Menu, X } from 'lucide-react';
-import Logo from '../../img/vaccine-logo.svg'
+import Logo from '../../img/icon1.jpg'
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,9 +13,9 @@ const Navigation = () => {
     <nav className="bg-white shadow-md">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <div className="flex items-center space-x-3">
-        <img src={Logo} alt="Logo" className="h-16 w-16 md:h-20 md:w-20" />
+       
         <h1 className="text-4xl font-bold">
-          <a href="/" className="hover:underline">Barangay Canlandog Vaccination System</a>
+          <a href="/" className="hover:underline">Vaccination Record Management system for infants in Brgy. Canlandog</a>
         </h1>
         </div>
         <div className="md:hidden">
