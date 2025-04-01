@@ -158,13 +158,13 @@ useEffect(() => {
             <Layout>
                 <Header className="bg-white p-4 shadow-md flex justify-between items-center">
                     <h2 className="text-4xl font-semibold">Infants List</h2>
-                    <Avatar size="large" className="bg-gray-300" />
+                    <Button type="primary" onClick={() => setIsModalOpen(true)}>Add Infant</Button>
                 </Header>
                 <Content
                   className="p-6 bg-cover bg-center"
                   style={{ backgroundImage: `url(${background})` }}
                 >
-                    <Button type="primary" onClick={() => setIsModalOpen(true)}>Add Infant</Button>
+                    
                     <div className="mt-6 grid grid-cols-2 gap-4">
                         {infants.map((infant) => (
                             <Card key={infant.id} className="shadow-lg p-4">
