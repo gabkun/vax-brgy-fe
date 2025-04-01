@@ -15,6 +15,7 @@ import HealthInfant from "./Components/Healthworker/Infant.jsx";
 import HealthVaccination from "./Components/Healthworker/Vaccination.jsx";
 import HealthVaccine from "./Components/Healthworker/Vaccinelist.jsx";
 import PurokManagement from "./Components/Dashboard/Puroks.jsx";
+import OTPVerification from "./Components/Otp/Otp.jsx";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Route path="/verify" element={<VerificationCodeInput />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/otp-verification" element={<OTPVerification />} />
         <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
         <Route path="/workerlist" element={<PrivateRoute><HealthWorkerManagement /></PrivateRoute>} />
         <Route path="/vaccinelist" element={<PrivateRoute><VaccinationList /></PrivateRoute>} />

@@ -42,7 +42,7 @@ const LoginForm = () => {
   return (
     <>
       <Navigation />
-      <h1 className="text-5xl m-10 font-extrabold text-gray-800 text-center">Vaccination Record Management System for Infant of Barangay Canlandog</h1>
+     
       <div
         className="overflow-hidden h-screen flex items-start justify-center bg-cover bg-center p-4 pt-16"
         style={{ backgroundImage: `url(${background})` }}
