@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Button, Layout, Avatar } from 'antd';
+import { Card, Avatar, Layout, Calendar, Badge, Modal, List, Button, Spin, Tag, message } from 'antd';
 import axiosInstance from '../../../api/axiosConfig';
 import { Syringe, MapPin, ShieldCheck, Baby, UserCheck } from 'lucide-react';
+import dayjs from 'dayjs';
 import Sidebar from './Sidebar';
 import background from '../../img/bg-image-work.jpg'
 
@@ -10,28 +11,18 @@ const { Sider, Content, Header } = Layout;
 const HworkerDashboard = () => {
     const [userDetails, setUserDetails] = useState(null);
     const [vaccineTotal, setVaccineTotal] = useState(0);
-const [purokTotal, setPurokTotal] = useState(0);
-const [infantTotal, setInfantTotal] = useState(0);
-const [vaccinatedTotal, setVaccinatedTotal] = useState(0);
-const [healthworkerTotal, setHealthworkerTotal] = useState(0);
+    const [purokTotal, setPurokTotal] = useState(0);
+    const [infantTotal, setInfantTotal] = useState(0);
+    const [vaccinatedTotal, setVaccinatedTotal] = useState(0);
+    const [healthworkerTotal, setHealthworkerTotal] = useState(0);
+    const [vaccinations, setVaccinations] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [isSchedModalOpen, setIsSchedModalOpen] = useState(false);
+    const [selectedDate, setSelectedDate] = useState(null);
+    const [vaccinationToday, setVaccinationToday] = useState([]);
 
-    useEffect(() => {
-        const fetchAdminDetails = async () => {
-            try {
-                const token = localStorage.getItem('token');
-                const response = await axiosInstance.get('/api/auth/admin-details', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-                setAdminDetails(response.data.admin);
-            } catch (error) {
-                console.error('Error fetching admin details:', error.response?.data?.message);
-            }
-        };
 
-        fetchAdminDetails();
-    }, []);
 
     useEffect(() => {
         const fetchTotals = async () => {
@@ -43,13 +34,7 @@ const [healthworkerTotal, setHealthworkerTotal] = useState(0);
                     axiosInstance.get('/api/vaccination/total/vaccinated'),
                     axiosInstance.get('/api/health/total/healthworker'),
                 ]);
-    
-                console.log("Vaccine Total:", vaccineRes.data);
-                console.log("Purok Total:", purokRes.data);
-                console.log("Infant Total:", infantRes.data);
-                console.log("Vaccinated Total:", vaccinatedRes.data);
-                console.log("Healthworker Total:", healthworkerRes.data);
-    
+
                 setVaccineTotal(vaccineRes.data.total);
                 setPurokTotal(purokRes.data.total);
                 setInfantTotal(infantRes.data.total);
@@ -59,10 +44,56 @@ const [healthworkerTotal, setHealthworkerTotal] = useState(0);
                 console.error('Error fetching totals:', error.response?.data?.message);
             }
         };
-    
         fetchTotals();
     }, []);
-    
+
+    useEffect(() => {
+        const fetchData = async () => {
+            setLoading(true);
+            try {
+                const { data } = await axiosInstance.get('/api/vaccination/');
+                setVaccinations(Array.isArray(data) ? data : []);
+            } catch (err) {
+                setError('Failed to fetch data');
+                message.error('Error loading data');
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, []);
+
+    const getListData = (value) => {
+        const dateStr = value.format("YYYY-MM-DD");
+        return vaccinations
+            .filter(vaccine => dayjs(vaccine.sched_date).format("YYYY-MM-DD") === dateStr)
+            .map(vaccine => ({
+                id: vaccine.id,
+                type: vaccine.status === 2 ? "success" : "warning",
+                name: `${vaccine.member_lname}, ${vaccine.member_fname} (${vaccine.vaccine_name})`,
+                vaccine: vaccine.vaccine_name,
+                member: `${vaccine.member_lname}, ${vaccine.member_fname} ${vaccine.suffix || ""}`,
+                worker: `${vaccine.worker_fname} ${vaccine.worker_lname}`,
+            }));
+    };
+
+    const dateCellRender = (value) => {
+        const listData = getListData(value);
+        return (
+            <ul className="events">
+                {listData.map((item, index) => (
+                    <li key={index} className="truncate cursor-pointer" onClick={() => handleDateClick(value)}>
+                        <Badge status={item.type} text={item.name} />
+                    </li>
+                ))}
+            </ul>
+        );
+    };
+
+    const handleDateClick = (date) => {
+        setSelectedDate(date);
+        setIsSchedModalOpen(true);
+    };
     
 
     const cardData = [
@@ -74,34 +105,81 @@ const [healthworkerTotal, setHealthworkerTotal] = useState(0);
     ];
     
     
+    useEffect(() => {
+        const fetchVaccinationToday = async () => {
+            setLoading(true);
+            try {
+                const { data } = await axiosInstance.get('/api/vaccination/today');
+                const formattedData = data.map(vaccine => ({
+                    vaccine_name: vaccine.vaccine_name,
+                    member_name: `${vaccine.member_fname} ${vaccine.member_lname} ${vaccine.member_suffix || ''}`.trim(),
+                    sched_time: dayjs(vaccine.sched_time, 'HH:mm:ss').format('hh:mm A'), // Convert to 12-hour format
+                }));
+                setVaccinationToday(formattedData);
+            } catch (err) {
+                setError('Failed to fetch vaccination data');
+                message.error('Error loading vaccination data');
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchVaccinationToday();
+    }, []);
     return (
-        <Layout className='min-h-screen'>
-            <Sidebar />
-            <Layout>
-                <Header className='bg-white p-6 shadow-md flex justify-between items-center'>
-                    <h2 className='text-4xl font-semibold'>Healthworker Dashboard</h2>
-                    <Avatar size='large' className='bg-gray-300' />
-                </Header>
-                <Content
-                    className='p-8 bg-cover bg-center relative flex items-center justify-center'
-                    style={{ backgroundImage: `url(${background})` }}
+        <Layout className="min-h-screen flex">
+        {/* Sidebar */}
+        <Sidebar />
+  
+        {/* Main Layout */}
+        <Layout className="flex-1">
+          <Header className="bg-white p-6 shadow-md flex items-center">
+            <h2 className="text-4xl font-semibold">Healthworker Dashboard</h2>
+          </Header>
+  
+          <Content
+            className="p-8 bg-cover bg-center relative flex flex-col items-center"
+            style={{ backgroundImage: `url(${background})` }}
+          >
+            {/* Cards Section */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-5xl">
+              {cardData.map((item, index) => (
+                <Card
+                  key={index}
+                  className="rounded-2xl shadow-lg flex flex-col justify-center items-center h-44 bg-white bg-opacity-90 backdrop-blur-md transition-transform hover:scale-105 duration-300"
                 >
-                    <div className='absolute inset-0 bg-black opacity-40'></div>
-                    <div className='relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
-                        {cardData.map((item, index) => (
-                            <Card
-                                key={index}
-                                className='rounded-2xl shadow-xl flex flex-col justify-center items-center h-44 w-72 bg-white bg-opacity-90 backdrop-blur-md hover:scale-105 transition-transform duration-300'
-                            >
-                                {item.icon}
-                                <h3 className='text-xl font-bold mt-2'>{item.title}</h3>
-                                <p className='text-3xl font-semibold'>{item.count}</p>
-                            </Card>
-                        ))}
-                    </div>
-                </Content>
-            </Layout>
+                  {item.icon}
+                  <h3 className="text-xl font-bold mt-2">{item.title}</h3>
+                  <p className="text-3xl font-semibold">{item.count}</p>
+                </Card>
+              ))}
+            </div>
+            
+  
+            {/* Vaccination Today Section */}
+            <div className="mt-8 w-full max-w-2xl bg-white p-6 rounded-2xl shadow-lg">
+              <h3 className="text-2xl font-bold mb-4">Vaccination Today</h3>
+              {loading ? (
+                <p>Loading...</p>
+              ) : error ? (
+                <p className="text-red-500">{error}</p>
+              ) : vaccinationToday.length > 0 ? (
+                <List
+                  dataSource={vaccinationToday}
+                  renderItem={(item) => (
+                    <List.Item className="flex justify-between items-center">
+                      <Badge color="blue" text={item.vaccine_name} />
+                      <span className="font-semibold">{item.member_name}</span>
+                      <span className="text-gray-600">{item.sched_time}</span>
+                    </List.Item>
+                  )}
+                />
+              ) : (
+                <p className="text-gray-600">No vaccinations scheduled for today.</p>
+              )}
+            </div>
+          </Content>
         </Layout>
+      </Layout>
     );
 };
 

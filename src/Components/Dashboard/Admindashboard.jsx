@@ -20,6 +20,7 @@ const Dashboard = () => {
     const [error, setError] = useState(null);
     const [isSchedModalOpen, setIsSchedModalOpen] = useState(false);
     const [selectedDate, setSelectedDate] = useState(null);
+    const [vaccinationToday, setVaccinationToday] = useState([]);
 
     useEffect(() => {
         const fetchAdminDetails = async () => {
@@ -115,45 +116,82 @@ const Dashboard = () => {
         { icon: <UserCheck className='h-12 w-12 text-purple-500' />, title: 'Healthworker List', count: healthworkerTotal },
     ];
 
+    useEffect(() => {
+        const fetchVaccinationToday = async () => {
+            setLoading(true);
+            try {
+                const { data } = await axiosInstance.get('/api/vaccination/today');
+                const formattedData = data.map(vaccine => ({
+                    vaccine_name: vaccine.vaccine_name,
+                    member_name: `${vaccine.member_fname} ${vaccine.member_lname} ${vaccine.member_suffix || ''}`.trim(),
+                    sched_time: dayjs(vaccine.sched_time, 'HH:mm:ss').format('hh:mm A'), // Convert to 12-hour format
+                }));
+                setVaccinationToday(formattedData);
+            } catch (err) {
+                setError('Failed to fetch vaccination data');
+                message.error('Error loading vaccination data');
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchVaccinationToday();
+    }, []);
+
     return (
-        <Layout className='min-h-screen'>
-            <Sidebar />
-            <Layout>
-                           <Header className="bg-white p-4 shadow-md flex justify-between items-center">
-                               <h2 className="text-4xl font-semibold">Admin Dashboard</h2>
-                           </Header>
-                <Content className='p-8 bg-cover bg-center' style={{ backgroundImage: `url(${background})` }}>
-                    <h2 className='text-3xl font-bold my-4'>Vaccination Schedules</h2>
-                    <Calendar dateCellRender={dateCellRender} className='bg-white p-4 shadow-lg rounded-lg mb-6' onSelect={handleDateClick} />
-                    <Modal title={`Vaccinations on ${selectedDate ? selectedDate.format("MM/DD/YYYY") : ""}`} open={isSchedModalOpen} onCancel={() => setIsSchedModalOpen(false)} footer={null}>
-                        <List bordered dataSource={getListData(selectedDate || dayjs())} renderItem={(item) => (
-                            <List.Item>
-                                <strong>{item.member}</strong> - {item.vaccine} <br />
-                                <strong>Health Worker Assigned:</strong> {item.worker}
-                            </List.Item>
-                        )} />
-                    </Modal>
-                </Content>
-                <Content
-                    className='p-8 bg-cover bg-center relative flex items-center justify-center'
-                    style={{ backgroundImage: `url(${background})` }}
+        <Layout className="min-h-screen flex">
+        {/* Sidebar */}
+        <Sidebar />
+  
+        {/* Main Layout */}
+        <Layout className="flex-1">
+          <Header className="bg-white p-6 shadow-md flex items-center">
+            <h2 className="text-4xl font-semibold">Admin Dashboard</h2>
+          </Header>
+  
+          <Content
+            className="p-8 bg-cover bg-center relative flex flex-col items-center"
+            style={{ backgroundImage: `url(${background})` }}
+          >
+            {/* Cards Section */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-5xl">
+              {cardData.map((item, index) => (
+                <Card
+                  key={index}
+                  className="rounded-2xl shadow-lg flex flex-col justify-center items-center h-44 bg-white bg-opacity-90 backdrop-blur-md transition-transform hover:scale-105 duration-300"
                 >
-                    <div className='absolute inset-0'></div>
-                    <div className='relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
-                        {cardData.map((item, index) => (
-                            <Card
-                                key={index}
-                                className='rounded-2xl shadow-xl flex flex-col justify-center items-center h-44 w-72 bg-white bg-opacity-90 backdrop-blur-md hover:scale-105 transition-transform duration-300'
-                            >
-                                {item.icon}
-                                <h3 className='text-xl font-bold mt-2'>{item.title}</h3>
-                                <p className='text-3xl font-semibold'>{item.count}</p>
-                            </Card>
-                        ))}
-                    </div>
-                </Content>
-            </Layout>
+                  {item.icon}
+                  <h3 className="text-xl font-bold mt-2">{item.title}</h3>
+                  <p className="text-3xl font-semibold">{item.count}</p>
+                </Card>
+              ))}
+            </div>
+            
+  
+            {/* Vaccination Today Section */}
+            <div className="mt-8 w-full max-w-2xl bg-white p-6 rounded-2xl shadow-lg">
+              <h3 className="text-2xl font-bold mb-4">Vaccination Today</h3>
+              {loading ? (
+                <p>Loading...</p>
+              ) : error ? (
+                <p className="text-red-500">{error}</p>
+              ) : vaccinationToday.length > 0 ? (
+                <List
+                  dataSource={vaccinationToday}
+                  renderItem={(item) => (
+                    <List.Item className="flex justify-between items-center">
+                      <Badge color="blue" text={item.vaccine_name} />
+                      <span className="font-semibold">{item.member_name}</span>
+                      <span className="text-gray-600">{item.sched_time}</span>
+                    </List.Item>
+                  )}
+                />
+              ) : (
+                <p className="text-gray-600">No vaccinations scheduled for today.</p>
+              )}
+            </div>
+          </Content>
         </Layout>
+      </Layout>
     );
 };
 

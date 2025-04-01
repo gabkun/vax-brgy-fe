@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Spin, Layout, message, Button, Modal, Form, Input, Select, Tag, Badge, List } from 'antd';
+import { Card, Spin, Layout, message, Button, Modal, Form, Input, Select, Tag, Badge, List, Calendar } from 'antd';
 import dayjs from "dayjs";
 import Sidebar from '../Sidebar/Sidebar';
 import axiosInstance from '../../../api/axiosConfig';
 import background from '../../img/bg-image-admin.jpg';
-import { Calendar } from "lucide-react";
+import { Calendar as CalendarIcon } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import EditVaccination from './EditModal';
 
@@ -22,6 +22,7 @@ const Vaccination = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
 
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
@@ -229,14 +230,27 @@ const Vaccination = () => {
             <Sidebar />
             <Layout>
             <Header className="bg-white p-4 shadow-md flex justify-between items-center">
-    <h2 className="text-4xl font-semibold">Vaccination History</h2>
+    <h2 className="text-4xl font-semibold">Vaccination Schedule</h2>
     <div className="flex items-center gap-4">
-        <button onClick={() => console.log("Calendar clicked")} className="p-2 rounded-md hover:bg-gray-100 transition">
-            <Calendar className="w-6 h-6 text-gray-600" />
+    <button
+                onClick={() => setIsCalendarModalOpen(true)}
+                className="p-2 rounded-md hover:bg-gray-100 transition"
+            >
+            <CalendarIcon className="w-6 h-6 text-gray-600" />
         </button>
         <Button type="primary" onClick={() => setIsModalOpen(true)}>
-            Add Vaccination
+            Add Schedule
         </Button>
+          {/* Calendar Modal */}
+          <Modal
+                title="Vaccination Schedule This Month"
+                open={isCalendarModalOpen}
+                onCancel={() => setIsCalendarModalOpen(false)}
+                footer={null}
+                width={800}
+            >
+                <Calendar dateCellRender={dateCellRender} className="bg-white p-4 shadow-lg rounded-lg" />
+            </Modal>
     </div>
 </Header>
 
@@ -250,7 +264,7 @@ const Vaccination = () => {
                 ) : (
                     <>
                         
-                        <h2 className="text-3xl font-bold my-4">Vaccination Records</h2>
+                
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {vaccinations.map((vaccine) => (
                                 <Card key={vaccine.id} className="shadow-lg hover:shadow-xl transition-all duration-300 p-6">

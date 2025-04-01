@@ -3,13 +3,16 @@ import { Card, Spin, Layout, message, Button, Modal, Form, Input, Select, Tag, C
 import dayjs from "dayjs";
 import Sidebar from './Sidebar';
 import axiosInstance from '../../../api/axiosConfig';
-import background from '../../img/bg-image-admin.jpg';
+import background from '../../img/bg-image-work.jpg';
+import { Calendar as CalendarIcon } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
 import EditVaccination from './EditModal';
 
 const { Sider, Content, Header } = Layout;
 const { Option } = Select;
 
 const HealthVaccination = () => {
+    const navigate = useNavigate();
     const [vaccinations, setVaccinations] = useState([]);
     const [healthWorkers, setHealthWorkers] = useState([]);
     const [vaccines, setVaccines] = useState([]);
@@ -19,6 +22,7 @@ const HealthVaccination = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
 
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
@@ -85,6 +89,7 @@ const HealthVaccination = () => {
         try {
             await axiosInstance.post('/api/vaccination/create', values);
             message.success('Vaccine created successfully');
+            navigate('/otp-verification'); 
             form.resetFields();
             setIsModalOpen(false);
         } catch (err) {
@@ -225,11 +230,29 @@ const HealthVaccination = () => {
             <Sidebar />
             <Layout>
             <Header className="bg-white p-4 shadow-md flex justify-between items-center">
-                <h2 className="text-4xl font-semibold">Vaccination History</h2>
-                <Button type="primary" onClick={() => setIsModalOpen(true)}>
-    Add Vaccination
-</Button>
-            </Header>
+    <h2 className="text-4xl font-semibold">Vaccination Schedule</h2>
+    <div className="flex items-center gap-4">
+    <button
+                onClick={() => setIsCalendarModalOpen(true)}
+                className="p-2 rounded-md hover:bg-gray-100 transition"
+            >
+            <CalendarIcon className="w-6 h-6 text-gray-600" />
+        </button>
+        <Button type="primary" onClick={() => setIsModalOpen(true)}>
+            Add Schedule
+        </Button>
+          {/* Calendar Modal */}
+          <Modal
+                title="Vaccination Schedule This Month"
+                open={isCalendarModalOpen}
+                onCancel={() => setIsCalendarModalOpen(false)}
+                footer={null}
+                width={800}
+            >
+                <Calendar dateCellRender={dateCellRender} className="bg-white p-4 shadow-lg rounded-lg" />
+            </Modal>
+    </div>
+</Header>
 
             <Content className="p-6 bg-cover bg-center" style={{ backgroundImage: `url(${background})` }}>
                 {loading ? (
@@ -240,14 +263,8 @@ const HealthVaccination = () => {
                     <div className="text-center text-red-500">{error}</div>
                 ) : (
                     <>
-                        <h2 className="text-3xl font-bold my-4">Vaccination Schedule</h2>
-                        <Calendar 
-                            dateCellRender={dateCellRender} 
-                            className="bg-white p-4 shadow-lg rounded-lg mb-6" 
-                            onSelect={handleDateClick} 
-                        />
-
-                        <h2 className="text-3xl font-bold my-4">Vaccination Records</h2>
+                        
+                
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {vaccinations.map((vaccine) => (
                                 <Card key={vaccine.id} className="shadow-lg hover:shadow-xl transition-all duration-300 p-6">

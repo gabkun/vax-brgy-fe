@@ -3,7 +3,7 @@ import { Card, Button, Modal, Input, message, Avatar, Layout, DatePicker  } from
 import moment from 'moment';
 import axiosInstance from '../../../api/axiosConfig';
 import Sidebar from './Sidebar';
-import background from '../../img/bg-image-admin.jpg'
+import background from '../../img/bg-image-work.jpg'
 import { useNavigate } from 'react-router-dom';
 
 const { Sider, Content, Header } = Layout;
