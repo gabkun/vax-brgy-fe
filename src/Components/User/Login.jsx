@@ -47,7 +47,7 @@ const LoginForm = () => {
         className="overflow-hidden h-screen flex items-start justify-center bg-cover bg-center p-4 pt-16"
         style={{ backgroundImage: `url(${background})` }}
       >
-        <div className="w-full max-w-md bg-white shadow-xl rounded-2xl p-8">
+        <div className="w-full max-w-md bg-white shadow-xl rounded-2xl p-3 mt-40">
           <h2 className="text-xl font-semibold text-gray-700 text-center mb-4">Login</h2>
           {error && <p className="text-red-500 text-center text-sm mb-4">{error}</p>}
           <form onSubmit={handleSubmit} className="space-y-4">
